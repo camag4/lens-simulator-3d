@@ -1,20 +1,26 @@
 import { StatsPanel } from './StatsPanel';
 import { ControlsPanel } from './ControlsPanel';
+import { SensorCropOverlay } from './SensorCropOverlay';
 
 export function Overlay() {
   return (
-    <div className="absolute inset-0 z-10 pointer-events-none flex flex-col md:flex-row justify-between p-0 md:p-6 pb-0 md:pb-6 overflow-hidden">
+    <>
+      {/* Crop overlay should be behind the UI but above the 3D canvas */}
+      <SensorCropOverlay />
       
-      {/* Top Left: HUD Stats */}
-      <div className="w-full md:w-auto p-4 md:p-0">
-        <StatsPanel />
-      </div>
+      <div className="absolute inset-0 z-10 pointer-events-none flex flex-col md:flex-row justify-between p-0 md:p-6 pb-0 md:pb-6 overflow-hidden">
 
-      {/* Bottom (Mobile) / Right (Desktop): Controls */}
-      <div className="mt-auto md:mt-0 flex justify-end">
-        <ControlsPanel />
-      </div>
+        {/* Top Left: HUD Stats */}
+        <div className="w-full md:w-auto p-4 md:p-0">
+          <StatsPanel />
+        </div>
 
-    </div>
+        {/* Bottom (Mobile) / Right (Desktop): Controls */}
+        <div className="mt-auto md:mt-0 flex justify-end">
+          <ControlsPanel />
+        </div>
+
+      </div>
+    </>
   );
 }

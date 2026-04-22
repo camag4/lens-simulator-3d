@@ -1,4 +1,3 @@
-import React from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Scene } from './components/scene/Scene';
 import { CameraController } from './components/scene/CameraController';

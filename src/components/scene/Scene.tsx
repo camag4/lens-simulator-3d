@@ -1,8 +1,41 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Box, Sphere, Cylinder, Environment, ContactShadows, Grid } from '@react-three/drei';
 import * as THREE from 'three';
 import { useLensStore } from '../../store/useLensStore';
+
+// Focus Feedback Component
+function FocusFeedback({ position }: { position: THREE.Vector3 | null }) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const [scale, setScale] = useState(0);
+  const [opacity, setOpacity] = useState(0);
+
+  useEffect(() => {
+    if (position) {
+      // Trigger animation reset
+      setScale(0);
+      setOpacity(1);
+    }
+  }, [position]);
+
+  useFrame((_, delta) => {
+    if (meshRef.current && opacity > 0) {
+      setScale((s) => Math.min(s + delta * 5, 1)); // Grow
+      setOpacity((o) => Math.max(o - delta * 2, 0)); // Fade out
+      meshRef.current.scale.set(scale, scale, scale);
+      (meshRef.current.material as THREE.MeshBasicMaterial).opacity = opacity;
+    }
+  });
+
+  if (!position) return null;
+
+  return (
+    <mesh ref={meshRef} position={position}>
+      <sphereGeometry args={[0.2, 16, 16]} />
+      <meshBasicMaterial color="#ffffff" transparent opacity={0} depthTest={false} />
+    </mesh>
+  );
+}
 
 export function Scene() {
   const foregroundRef = useRef<THREE.Mesh>(null);
@@ -11,6 +44,7 @@ export function Scene() {
   
   const setDistance = useLensStore((state) => state.setDistance);
   const [hovered, setHovered] = useState(false);
+  const [clickPosition, setClickPosition] = useState<THREE.Vector3 | null>(null);
 
   // Subtle floating animation
   useFrame((state) => {
@@ -26,13 +60,19 @@ export function Scene() {
     // Cap the distance at our slider max (50m) to avoid breaking UI state bounds
     const newDist = Math.min(Math.max(e.distance, 0.5), 50);
     setDistance(newDist);
+    // Set exact click point for feedback
+    setClickPosition(e.point);
   };
+
+  // Update cursor state when hovered changes
+  if (typeof document !== 'undefined') {
+    document.body.style.cursor = hovered ? 'crosshair' : 'default';
+  }
 
   return (
     <group 
-      onPointerOver={() => setHovered(true)} 
-      onPointerOut={() => setHovered(false)}
-      style={{ cursor: hovered ? 'crosshair' : 'default' }}
+      onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
+      onPointerOut={(e) => { e.stopPropagation(); setHovered(false); }}
     >
       <color attach="background" args={['#0a0a0a']} />
       
@@ -90,6 +130,9 @@ export function Scene() {
         onPointerDown={handlePointerDown}
       />
       <ContactShadows position={[0, -0.59, 0]} opacity={0.4} scale={50} blur={2} far={10} />
+
+      {/* Autofocus Feedback */}
+      <FocusFeedback position={clickPosition} />
     </group>
   );
 }
