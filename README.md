@@ -1,80 +1,50 @@
-# React + TypeScript + Vite
+# Interactive 3D Lens Simulator 📸
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A high-performance educational tool bridging the gap between photography theory and interactive WebGL.
 
-Currently, two official plugins are available:
+This project is a mobile-first 3D Depth of Field (DoF) visualizer designed to help photography students, educators, and enthusiasts intuitively understand camera optics. By simulating real-world physical parameters—such as **F-Stop (Aperture)**, **Focal Length**, **Sensor Size**, and **Subject Distance**—users can see the immediate impact on the focal plane, hyperfocal distance, and bokeh in a responsive, real-time 3D environment.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Built to demonstrate advanced UI/UX principles and highly optimized frontend architecture, this simulator maintains a strict 60fps across mobile browsers while rendering cinematic post-processing effects.
 
-## React Compiler
+## 🎯 Core Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+*   **Physical Lens Simulation**: Accurate mathematical modeling of Hyperfocal Distance, Near/Far Focus Limits, and Circle of Confusion (CoC) based on exact sensor sizes (Full Frame, APS-C, etc.).
+*   **Real-time Depth of Field**: Hardware-accelerated DoF post-processing that accurately reacts to aperture and focal length adjustments.
+*   **Dynamic Auto-Focus**: Raycasted tap-to-focus allowing users to instantly shift the focal plane between subjects in the 3D scene.
+*   **Premium Educational UI/UX**: A custom, "Glassmorphism" interface featuring realistic stepped dials for aperture, interactive focal sliders, HUD stats, and mobile-first bottom sheets.
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack & Architecture
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+This project is engineered to avoid React rendering bottlenecks while maintaining heavy WebGL operations:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+*   **Core Build**: React 18 + Vite + TypeScript
+*   **3D Engine**: `@react-three/fiber` (R3F) & `three.js`
+*   **Cinematic Effects**: `@react-three/postprocessing` (Highly optimized single-pass shaders)
+*   **State Management**: `zustand` (Crucial for bypassing React lifecycle during 60fps WebGL updates)
+*   **UI & Animations**: Tailwind CSS (Styling) & Framer Motion (Smooth mounting/unmounting)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 🤖 Agent Skills (Domain Logic)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+This repository utilizes specialized local AI Agent Skills (located in `.agent/skills/`) to isolate domain logic from the React components:
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+1.  **The Optics Theorist**: A mathematical engine (`optics_logic.py`) that acts as the source of truth for photography formulas, translating physical inputs into WebGL-ready uniforms.
+2.  **The Interface Architect**: A UI/UX engine (`ui_design.py`) that strictly dictates the layout architecture, Tailwind tokens, and DOM structure to maintain design consistency without polluting the 3D canvas.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🗺️ Execution Roadmap
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+The project development is structured into 5 phases:
 
+- [x] **Phase 1: Project Initialization & Foundation** - Vite setup, dependencies, and Tailwind configuration.
+- [x] **Phase 2: Core State & Optics Engine** - Zustand store implementation and integration of the "Optics Theorist" formulas.
+- [ ] **Phase 3: WebGL & Post-Processing Pipeline** - R3F Canvas setup, 3D scene composition, and DoF shader mapping.
+- [ ] **Phase 4: Interface Architecture Overlay** - Implementation of the "Glassmorphism" DOM layer (Stats, Controls, Responsive Wrappers).
+- [ ] **Phase 5: Interactivity & Polish** - Tap-to-focus raycasting and extreme mobile performance optimization.
 
-## Documentación del Proyecto
+## 📄 Documentación del Proyecto
 - [Plan Maestro](./PLAN.md)
 - [Arquitectura](./ARCHITECTURE.md)
 - [Convenciones](./CONVENTIONS.md)
 - [Contexto LLM](./llms.txt)
+
+---
+*Created with advanced Agentic Coding workflows.*

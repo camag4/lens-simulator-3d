@@ -23,9 +23,3 @@ dist-ssr
 *.sln
 *.sw?
 
-# Antigravity Context & Skills (Local Only)
-.agent/
-llms.txt
-ARCHITECTURE.md
-CONVENTIONS.md
-PLAN.md

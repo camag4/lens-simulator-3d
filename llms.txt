@@ -1,0 +1,23 @@
+# lens-simulator-3d
+> Generado por Guardian-Contexto v4.1 (Arquitectura Eficiente Deep Context)
+
+## 📌 Visión del Proyecto
+Simulador interactivo 3D de profundidad de campo (DoF) enfocado en la educación fotográfica para entender el impacto de la apertura, longitud focal y tamaño del sensor.
+
+## 📝 Notas de los Agentes (Historial de Commits Recientes)
+```text
+- 5e16e61: chore: init project and frontend foundations
+- e1fc342: Initial commit
+```
+
+## ⚡ Memoria Inmediata (Archivos Modificados en Stage)
+```text
+No hay cambios detectados en el stage actual.
+```
+
+## 🧠 Enrutamiento de Contexto Profundo
+El contexto detallado está distribuido para prevenir saturación de tokens. DEBES usar las siguientes herramientas o archivos para contextualizarte:
+
+- **[PLAN.md](./PLAN.md)**: Roadmap, Tareas Pendientes y Decisiones. **LÉELO** si preguntas "¿qué sigue?" o si vas a planificar nuevas features.
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)**: Árbol de archivos completo, Stack (Core JS, Styling, Animation, Logic/Lang) y Migraciones DB. **LÉELO** si vas a crear componentes, modificar backend, o afectar la BD.
+- **[CONVENTIONS.md](./CONVENTIONS.md)**: Reglas de estilo. **LÉELO** antes de refactorizar o escribir nuevo código.
