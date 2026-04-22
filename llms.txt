@@ -6,9 +6,9 @@ Simulador interactivo 3D de profundidad de campo (DoF) enfocado en la educación
 
 ## 📝 Notas de los Agentes (Historial de Commits Recientes)
 ```text
+- 099f1b6: feat: build glassmorphism UI overlay and controls
 - a14adb9: feat: setup R3F canvas and DoF post-processing pipeline
 - dc42f8c: feat: implement core optics engine and global state
-- 5e16e61: chore: init project and frontend foundations
 ```
 
 ## ⚡ Memoria Inmediata (Archivos Modificados en Stage)
