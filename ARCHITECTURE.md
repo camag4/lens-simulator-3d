@@ -48,6 +48,10 @@
         - CameraController.tsx
         - PostProcessing.tsx
         - Scene.tsx
+      - ui/
+        - ControlsPanel.tsx
+        - Overlay.tsx
+        - StatsPanel.tsx
     - lib/ [Utilidades/Lógica]
       - opticsLogic.ts
     - store/

@@ -4,6 +4,8 @@ import { Scene } from './components/scene/Scene';
 import { CameraController } from './components/scene/CameraController';
 import { PostProcessing } from './components/scene/PostProcessing';
 
+import { Overlay } from './components/ui/Overlay';
+
 function App() {
   return (
     <div className="w-full h-full bg-black overflow-hidden relative">
@@ -20,10 +22,8 @@ function App() {
         </Canvas>
       </div>
       
-      {/* UI Overlay Placeholder (Phase 4) */}
-      <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center">
-        <p className="text-white/30 tracking-widest text-sm uppercase">UI Overlay pending</p>
-      </div>
+      {/* UI Overlay Layer */}
+      <Overlay />
     </div>
   );
 }
