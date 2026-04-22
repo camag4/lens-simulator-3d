@@ -2,6 +2,6 @@
 
 <!-- AUTO_CONV_START -->
 - **Indentación**: Espacios
-- **Nomenclatura**: snake_case
+- **Nomenclatura**: camelCase/PascalCase
 - **Comentarios**: Estándar
 <!-- AUTO_CONV_END -->

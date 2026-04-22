@@ -43,6 +43,11 @@
       - hero.png
       - react.svg
       - vite.svg
+    - components/ [Bloques UI]
+      - scene/
+        - CameraController.tsx
+        - PostProcessing.tsx
+        - Scene.tsx
     - lib/ [Utilidades/Lógica]
       - opticsLogic.ts
     - store/
