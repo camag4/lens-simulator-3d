@@ -11,39 +11,38 @@ export function PostProcessing() {
     if (!dofRef.current) return;
     
     // Read transient state without triggering React re-renders
-    const { distance, optics } = useLensStore.getState();
-    const { coc, equivalentFocalLengthMm } = optics as any; // We'll map values
+    const { distance, optics, fStop, focalLength } = useLensStore.getState();
     
     // 1. FOCUS DISTANCE: Smoothly interpolate for cinematic autofocus feel
-    // Assuming camera near is 0.1 and far is 1000 (R3F defaults usually map to this range or we can just use 100 as far)
-    // To be safe with R3F standard cameras, camera.far is often 1000.
     const cameraFar = state.camera.far || 1000;
-    // We adjust the curve so it feels non-linear like a real autofocus motor
+    // Normalized distance from 0 to 1 based on camera.far
     const targetFocus = distance / cameraFar;
-    dofRef.current.focusDistance += (targetFocus - dofRef.current.focusDistance) * 0.08;
+    dofRef.current.cocMaterial.focusDistance += (targetFocus - dofRef.current.cocMaterial.focusDistance) * 0.08;
     
     // 2. BOKEH SCALE (Blur Intensity)
-    const fStop = useLensStore.getState().fStop;
-    const focalLength = useLensStore.getState().focalLength;
-    
-    // Physical aperture diameter: A = f / N
+    // Map the aperture diameter (focalLength / fStop) to a blur scale.
+    // Wide apertures (low fStop) like f/1.4 have larger diameters = more blur.
     const apertureDiameter = focalLength / fStop;
-    
-    // Dramatic mapping: We multiply by a factor to make wide apertures (f/1.4) extremely blurry 
-    // and closed apertures (f/22) very sharp.
-    const visualBokeh = Math.min(apertureDiameter * 0.8, 40); // Cap at 40 max blur
+    // Base scale on physical size, tuning it visually so max blur is noticeable but not broken
+    const visualBokeh = Math.min((apertureDiameter / 50) * 15, 30);
     dofRef.current.bokehScale += (visualBokeh - dofRef.current.bokehScale) * 0.1;
     
-    // 3. FOCAL LENGTH (DoF spread in the shader)
-    // The shader expects a value usually between 0.0 and 1.0. 
-    // A larger value means the blur starts immediately outside the focal plane (telephoto feel).
-    // We map our 14mm-200mm to roughly 0.02 - 0.4
-    const targetShaderFocalLength = focalLength / 500;
-    dofRef.current.focalLength += (targetShaderFocalLength - dofRef.current.focalLength) * 0.1;
+    // 3. FOCUS RANGE (DoF spread in the shader)
+    // The shader `focusRange` expects normalized values [0..1] denoting the spread
+    // around focusDistance. We map the mathematical `totalDofM` to this normalized range.
+    // If totalDoF is Infinity, we give it a large range so everything past focus is sharp.
+    let targetFocusRange = 0;
+    if (optics.totalDofM === "Infinity") {
+      targetFocusRange = 1.0;
+    } else {
+      // optics.totalDofM is in meters. We normalize it using the same cameraFar scaling.
+      targetFocusRange = (optics.totalDofM / 2) / cameraFar;
+    }
+    dofRef.current.cocMaterial.focusRange += (targetFocusRange - dofRef.current.cocMaterial.focusRange) * 0.1;
   });
 
   return (
-    <EffectComposer disableNormalPass multisampling={0}>
+    <EffectComposer enableNormalPass={false} multisampling={0}>
       <DepthOfField
         ref={dofRef}
         focusDistance={0.02} // Will be driven by useFrame

@@ -36,13 +36,13 @@ export function StatsPanel() {
         />
         <StatItem 
           label="Far Focus" 
-          value={optics.dofFarLimitM} 
+          value={optics.dofFarLimitM === "Infinity" ? "∞" : optics.dofFarLimitM}
           unit={optics.dofFarLimitM === "Infinity" ? "" : "m"} 
           highlight={false} 
         />
         <StatItem 
           label="Total Depth of Field" 
-          value={optics.totalDofM} 
+          value={optics.totalDofM === "Infinity" ? "∞" : optics.totalDofM}
           unit={optics.totalDofM === "Infinity" ? "" : "m"} 
           highlight={true} 
         />
@@ -68,13 +68,17 @@ export function StatsPanel() {
           
           {/* In-Focus Area (DoF) */}
           <motion.div 
-            className="absolute top-0 bottom-0 bg-green-500/30 border-x border-green-400"
+            className="absolute top-0 bottom-0 bg-green-500/30 border-x border-green-400 flex items-center justify-end pr-2 overflow-hidden"
             animate={{ 
               left: `${nearPct}%`, 
               width: `${dofWidth}%` 
             }}
             transition={{ type: "spring", bounce: 0, duration: 0.5 }}
-          />
+          >
+            {optics.dofFarLimitM === "Infinity" && (
+              <span className="text-white/50 text-xs font-bold pointer-events-none">∞</span>
+            )}
+          </motion.div>
 
           {/* Subject Position Marker */}
           <motion.div 
