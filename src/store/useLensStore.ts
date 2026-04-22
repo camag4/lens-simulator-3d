@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { calculateOptics, SensorType, OpticsCalculationResult, SENSORS } from '../lib/opticsLogic';
+import { calculateOptics, SENSORS } from '../lib/opticsLogic';
+import type { SensorType, OpticsCalculationResult } from '../lib/opticsLogic';
 
 interface LensState {
   // Inputs
@@ -7,10 +8,10 @@ interface LensState {
   focalLength: number; // in mm
   distance: number; // in meters
   sensor: SensorType;
-  
+
   // Derived Outputs (Calculated automatically)
   optics: OpticsCalculationResult;
-  
+
   // Actions
   setFStop: (val: number) => void;
   setFocalLength: (val: number) => void;
@@ -33,25 +34,25 @@ export const useLensStore = create<LensState>((set) => ({
     INITIAL_STATE.distance,
     INITIAL_STATE.sensor
   ),
-  
-  setFStop: (fStop) => set((state) => ({ 
-    fStop, 
-    optics: calculateOptics(fStop, state.focalLength, state.distance, state.sensor) 
+
+  setFStop: (fStop) => set((state) => ({
+    fStop,
+    optics: calculateOptics(fStop, state.focalLength, state.distance, state.sensor)
   })),
-  
-  setFocalLength: (focalLength) => set((state) => ({ 
-    focalLength, 
-    optics: calculateOptics(state.fStop, focalLength, state.distance, state.sensor) 
+
+  setFocalLength: (focalLength) => set((state) => ({
+    focalLength,
+    optics: calculateOptics(state.fStop, focalLength, state.distance, state.sensor)
   })),
-  
-  setDistance: (distance) => set((state) => ({ 
-    distance, 
-    optics: calculateOptics(state.fStop, state.focalLength, distance, state.sensor) 
+
+  setDistance: (distance) => set((state) => ({
+    distance,
+    optics: calculateOptics(state.fStop, state.focalLength, distance, state.sensor)
   })),
-  
-  setSensor: (sensor) => set((state) => ({ 
-    sensor, 
-    optics: calculateOptics(state.fStop, state.focalLength, state.distance, sensor) 
+
+  setSensor: (sensor) => set((state) => ({
+    sensor,
+    optics: calculateOptics(state.fStop, state.focalLength, state.distance, sensor)
   })),
 }));
 

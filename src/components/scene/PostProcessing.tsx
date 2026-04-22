@@ -14,32 +14,32 @@ export function PostProcessing() {
     const { distance, optics } = useLensStore.getState();
     const { coc, equivalentFocalLengthMm } = optics as any; // We'll map values
     
-    // In threejs postprocessing, focusDistance is normalized between camera near/far
-    // Assuming camera near is 0.1 and far is 1000
-    const cameraFar = state.camera.far;
-    const normalizedFocus = distance / cameraFar;
+    // 1. FOCUS DISTANCE: Smoothly interpolate for cinematic autofocus feel
+    // Assuming camera near is 0.1 and far is 1000 (R3F defaults usually map to this range or we can just use 100 as far)
+    // To be safe with R3F standard cameras, camera.far is often 1000.
+    const cameraFar = state.camera.far || 1000;
+    // We adjust the curve so it feels non-linear like a real autofocus motor
+    const targetFocus = distance / cameraFar;
+    dofRef.current.focusDistance += (targetFocus - dofRef.current.focusDistance) * 0.08;
     
-    // Smoothly interpolate for cinematic feel
-    dofRef.current.focusDistance += (normalizedFocus - dofRef.current.focusDistance) * 0.1;
-    
-    // Map CoC to bokeh scale (visual blur intensity)
-    // CoC in mm is usually very small (e.g., 0.029). Multiply to make it visible.
-    const targetBokeh = Math.max(1, (1 / optics.dofFarLimitM || 0.1) * 20); // Simplified visual mapping
-    // We actually calculated CoC in the python script but not in TS! 
-    // Wait, let's use fStop and focalLength directly to drive bokehScale
+    // 2. BOKEH SCALE (Blur Intensity)
     const fStop = useLensStore.getState().fStop;
     const focalLength = useLensStore.getState().focalLength;
     
-    // Bokeh scale is proportional to physical aperture diameter (focalLength / fStop)
+    // Physical aperture diameter: A = f / N
     const apertureDiameter = focalLength / fStop;
-    const visualBokeh = Math.min(apertureDiameter * 0.2, 20); // Cap it
     
-    // The focal length in the shader controls how quickly it blurs out
-    // Shader focalLength is typically 0.0 to 1.0. We map our mm (14-200) to (0.01-0.1)
-    const shaderFocalLength = focalLength / 1000;
-    
+    // Dramatic mapping: We multiply by a factor to make wide apertures (f/1.4) extremely blurry 
+    // and closed apertures (f/22) very sharp.
+    const visualBokeh = Math.min(apertureDiameter * 0.8, 40); // Cap at 40 max blur
     dofRef.current.bokehScale += (visualBokeh - dofRef.current.bokehScale) * 0.1;
-    dofRef.current.focalLength = shaderFocalLength;
+    
+    // 3. FOCAL LENGTH (DoF spread in the shader)
+    // The shader expects a value usually between 0.0 and 1.0. 
+    // A larger value means the blur starts immediately outside the focal plane (telephoto feel).
+    // We map our 14mm-200mm to roughly 0.02 - 0.4
+    const targetShaderFocalLength = focalLength / 500;
+    dofRef.current.focalLength += (targetShaderFocalLength - dofRef.current.focalLength) * 0.1;
   });
 
   return (
