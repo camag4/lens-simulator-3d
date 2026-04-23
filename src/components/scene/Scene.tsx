@@ -6,34 +6,56 @@ import { useLensStore } from '../../store/useLensStore';
 
 // Focus Feedback Component
 function FocusFeedback({ position }: { position: THREE.Vector3 | null }) {
-  const meshRef = useRef<THREE.Mesh>(null);
+  const groupRef = useRef<THREE.Group>(null);
   const [scale, setScale] = useState(0);
   const [opacity, setOpacity] = useState(0);
 
   useEffect(() => {
     if (position) {
       // Trigger animation reset
-      setScale(0);
+      setScale(0.5);
       setOpacity(1);
     }
   }, [position]);
 
-  useFrame((_, delta) => {
-    if (meshRef.current && opacity > 0) {
-      setScale((s) => Math.min(s + delta * 5, 1)); // Grow
-      setOpacity((o) => Math.max(o - delta * 2, 0)); // Fade out
-      meshRef.current.scale.set(scale, scale, scale);
-      (meshRef.current.material as THREE.MeshBasicMaterial).opacity = opacity;
+  useFrame((state, delta) => {
+    if (groupRef.current && opacity > 0) {
+      // Rotate for a subtle mechanical feel
+      groupRef.current.rotation.z += delta * 2;
+
+      // Animate scale to simulate a focus ring locking in
+      setScale((s) => THREE.MathUtils.damp(s, 1.2, 8, delta));
+      setOpacity((o) => Math.max(o - delta * 1.5, 0)); // Fade out smoothly
+
+      groupRef.current.scale.set(scale, scale, scale);
+
+      // Make the feedback always face the camera directly
+      groupRef.current.quaternion.copy(state.camera.quaternion);
+
+      // Update opacity on all children materials
+      groupRef.current.children.forEach((child) => {
+        if ((child as THREE.Mesh).material) {
+          ((child as THREE.Mesh).material as THREE.MeshBasicMaterial).opacity = opacity;
+        }
+      });
     }
   });
 
   if (!position) return null;
 
   return (
-    <mesh ref={meshRef} position={position}>
-      <sphereGeometry args={[0.2, 16, 16]} />
-      <meshBasicMaterial color="#ffffff" transparent opacity={0} depthTest={false} />
-    </mesh>
+    <group ref={groupRef} position={position}>
+      {/* Outer focus ring */}
+      <mesh>
+        <ringGeometry args={[0.15, 0.18, 32]} />
+        <meshBasicMaterial color="#facc15" transparent opacity={0} depthTest={false} />
+      </mesh>
+      {/* Center focus dot */}
+      <mesh>
+        <circleGeometry args={[0.03, 16]} />
+        <meshBasicMaterial color="#facc15" transparent opacity={0} depthTest={false} />
+      </mesh>
+    </group>
   );
 }
 
